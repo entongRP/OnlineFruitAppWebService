@@ -41,9 +41,44 @@ app.post('/addfruit', async (req, res) => {
     try{
         let connection = await mysql.createConnection(dbConfig);
         await connection.execute ('INSERT INTO fruits (fruit_name, fruit_pic) VALUES (?,?)', [fruit_name, fruit_pic]);
-        res.status(201).json({message: 'Fruit' + fruit_name + 'Successfully added'});
+        res.status(201).json({message: 'Fruit ' + fruit_name + ' Successfully added'});
     } catch(err) {
         console.error(err);
         res.status(500).json({message: 'Server error - could not add fruit '+ fruit_name});
+    }
+});
+
+//update fruit
+app.put('/updatefruit/:id', async (req, res) => {
+    const { id } = req.params;
+    const { fruit_name, fruit_pic } = req.body;
+
+    try {
+        let connection = await mysql.createConnection(dbConfig);
+        await connection.execute(
+            'UPDATE fruits SET fruit_name = ?, fruit_pic = ? WHERE id = ?',
+            [fruit_name, fruit_pic, id]
+        );
+        res.json({ message: 'Fruit successfully updated' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error - could not update fruit' });
+    }
+});
+
+//delete fruit
+app.delete('/deletefruit/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        let connection = await mysql.createConnection(dbConfig);
+        await connection.execute(
+            'DELETE FROM fruits WHERE id = ?',
+            [id]
+        );
+        res.json({ message: 'Fruit successfully deleted' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error - could not delete fruit' });
     }
 });
